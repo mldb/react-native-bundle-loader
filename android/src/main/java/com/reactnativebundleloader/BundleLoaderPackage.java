@@ -12,10 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class BundleLoaderPackage implements ReactPackage {
-  ReactApplication mReactApplication;
-  public BundleLoaderPackage(ReactApplication reactApplication){
-    mReactApplication=reactApplication;
-  }
+
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     return Collections.emptyList();
@@ -26,7 +23,7 @@ public class BundleLoaderPackage implements ReactPackage {
     ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
 
-    modules.add(new BundleLoaderModule(reactContext,mReactApplication));
+    modules.add(new BundleLoaderModule(reactContext));
 
     return modules;
   }

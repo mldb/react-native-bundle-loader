@@ -44,23 +44,25 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.facebook.react.devsupport.DevInternalSettings;
 
 public class BundleLoaderModule extends ReactContextBaseJavaModule {
-  private static ReactApplication reactContext;
+  ReactInstanceManager instanceManager;
 
-  BundleLoaderModule(ReactApplicationContext context,ReactApplication reactApplication) {
+  BundleLoaderModule(ReactApplicationContext context) {
     super(context);
-    reactContext = reactApplication;
+    ReactApplication reactApplication = (ReactApplication) getCurrentActivity().getApplication();
+    instanceManager = reactApplication.getReactNativeHost().getReactInstanceManager();
+
   }
 
   @ReactMethod
   public void load(String host) {
-    DevInternalSettings mDevSetting = new DevInternalSettings(getReactApplicationContext(), new DevInternalSettings.Listener() {
-      @Override
-      public void onInternalSettingsChanged() {
-        Log.d("TAG", "onInternalSettingsChanged: ");
-        reactContext.getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
-      }
-    });
-    mDevSetting.getPackagerConnectionSettings().setDebugServerHost(host);
+      DevInternalSettings mDevSetting = new DevInternalSettings(getReactApplicationContext(), new DevInternalSettings.Listener() {
+          @Override
+          public void onInternalSettingsChanged() {
+              instanceManager.recreateReactContextInBackground();
+          }
+      });
+      mDevSetting.getPackagerConnectionSettings().setDebugServerHost(host);
+      instanceManager.recreateReactContextInBackground();
   }
 
   @NonNull
