@@ -1,4 +1,4 @@
-package com.reactnativeBundleLoader;
+package com.reactnativebundleloader;
 
 
 import android.app.ActivityManager;
@@ -22,6 +22,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
@@ -43,31 +44,28 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.facebook.react.devsupport.DevInternalSettings;
 
 public class BundleLoaderModule extends ReactContextBaseJavaModule {
-    private static ReactApplicationContext reactContext;
-    private Config config;
+  private static ReactApplication reactContext;
 
-    NotificationUtilModule(ReactApplicationContext context) {
-        super(context);
-        reactContext = context;
-        this.config = new Config(context);
+  BundleLoaderModule(ReactApplicationContext context,ReactApplication reactApplication) {
+    super(context);
+    reactContext = reactApplication;
+  }
 
-    }
+  @ReactMethod
+  public void load(String host) {
+    DevInternalSettings mDevSetting = new DevInternalSettings(getReactApplicationContext(), new DevInternalSettings.Listener() {
+      @Override
+      public void onInternalSettingsChanged() {
+        Log.d("TAG", "onInternalSettingsChanged: ");
+        reactContext.getReactNativeHost().getReactInstanceManager().recreateReactContextInBackground();
+      }
+    });
+    mDevSetting.getPackagerConnectionSettings().setDebugServerHost(host);
+  }
 
-    @ReactMethod
-    public void load(String host) {
-      DevInternalSettings mDevSetting = new DevInternalSettings(this, new DevInternalSettings.Listener() {
-        @Override
-        public void onInternalSettingsChanged() {
-          Log.d("TAG", "onInternalSettingsChanged: ");
-          reactContext.getReactNativeHost().getReactInstanceManager().getReactInstanceManager().recreateReactContextInBackground();
-        }
-      });
-      mDevSetting.getPackagerConnectionSettings().setDebugServerHost(host);
-    }
-
-    @NonNull
-    @Override
-    public String getName() {
-        return "BundleLoaderModule";
-    }
+  @NonNull
+  @Override
+  public String getName() {
+    return "BundleLoaderModule";
+  }
 }

@@ -1,6 +1,7 @@
-package com.digikala.notification.util;
+package com.reactnativebundleloader;
 
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,20 +12,23 @@ import java.util.Collections;
 import java.util.List;
 
 public class BundleLoaderPackage implements ReactPackage {
+  ReactApplication mReactApplication;
+  public BundleLoaderPackage(ReactApplication reactApplication){
+    mReactApplication=reactApplication;
+  }
+  @Override
+  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    return Collections.emptyList();
+  }
 
-    @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
-    }
+  @Override
+  public List<NativeModule> createNativeModules(
+    ReactApplicationContext reactContext) {
+    List<NativeModule> modules = new ArrayList<>();
 
-    @Override
-    public List<NativeModule> createNativeModules(
-            ReactApplicationContext reactContext) {
-        List<NativeModule> modules = new ArrayList<>();
+    modules.add(new BundleLoaderModule(reactContext,mReactApplication));
 
-        modules.add(new BundleLoaderModule(reactContext));
-
-        return modules;
-    }
+    return modules;
+  }
 
 }
